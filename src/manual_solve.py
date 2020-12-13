@@ -2,6 +2,7 @@
 
 ### Student Name: Ahmed Abdelaziz
 ### Student ID: 20235539
+### Github UR: https://github.com/ahmadsaaad/ARC
 
 import os, sys
 import json
@@ -17,15 +18,27 @@ import re
 ### must be in the data/training directory, not data/evaluation.
 
 
+### Assumptions:
+### Any shape will be connected only horozntally or vertically but not diagonally ( otherwise, we would add more functions to the recrusive)
+### Shapes have only cells of value 8, other wise we will our if condition
 
-### Assumption any shape will be connected only horozntally or vertically not diagonally ( otherwise, we would add more functions to the recrusive)
-### clone the matrix into new matrix ( we could use the orginal one but just to not cause any affect in the orginal one)
-### find the first cell with value =8, increase the number of detected shapes by 1
-### clear all neighbour cells and recursively we will clear the neighbours of the neighbour.. etc
-### continue the loop untill we find the next cell with value 8 ... etc
-### finally create a matrix with x and y equal to the number of shapes and fill it diagonally with 8.
-### to avoid updating the original array or creating a new array to redeuce the space complixity, we could create set of visited cells. 
 
+### Description:
+### 1- we will find the number of connected shapes that have cells of value 8 
+### 2- create an array of length and width = to the number of shapes 
+### 3- Fill this matrix diagonally with value 8 
+
+### Code Steps: 
+### 1- clone the matrix into new matrix ( we could use the orginal one but just to not cause any effect on the orginal one)
+### 2- find the first cell with value =8, increase the number of detected shapes by 1
+### 3- clear all neighbour cells and recursively we will clear the neighbours of the neighbour.. untill we clear al the cells of this shape
+### 4- continue the loop untill we find the next cell with value 8 ... and do repeated step 2 and 3
+### 5- finally create a matrix with x and y equal to the number of shapes and fill it diagonally with 8.
+### (hint) to avoid updating the original array or creating a new array and increase the space complixity, we could have create set of visited cells. 
+
+### Python features and libraries:
+### in the below function I used standard python with numpy library 
+### I used numpy for clonning the 2D array, create an array with default values and to fill the output value diagonally.    
 def solve_d0f5fe59(x):
     number_of_shapes=0
     clonned_array=np.copy(x)
@@ -51,12 +64,27 @@ def clear_cells(row,column,arr):
     clear_cells(row,column-1,arr)
 
 
-### We will go through the rows and columns
-### create 2 dictionaries rows and columns. rows contains the first and the last column index of cells that has value 8 in this specific row,
-### while column will have the first and lat row index of cells that have value 8 in this sepicfic column.
-### the iteratopm os simple we iterate every row and if we found a cell with value 8, if the row dictionary doesnt have an entry for this row, we will create an entry with value [j,j]
-### and every time we find cell with value 8 in this row we will update the second element in the last with this the j of this cell. we will do the same for the columns. 
-### iterate over the those 2 dictionaries and connect between the first and last cell in the rows and columns that has value 8
+
+### Assumptions:
+### Cells can only have value 8 or zero, other wise we will our if condition
+
+### Description:
+### 1- we will find the first cells with value 8 in each row and column
+### 2- connect between the first cell and last cell with value 8 in the same column
+### 3- connect between the first cell and last cell with value 8 in the same row
+
+### Code Steps: 
+### 1- Clone the matrix into new matrix ( we could use the orginal one but just to not cause any effect on the orginal one)
+### 2- We will go through every cell
+### 3- Create 2 dictionaries rows and columns. rows contains a list of size 2 that contains the first and the last column index of cells that has value 8 in this specific row, while column contains list with size 2 that will have the first and last row index of cells that have value 8 in this sepicfic column.
+### 4- The iteration is simple we iterate every row and if we found a cell with value 8, if the row dictionary doesnt have an entry for this row, we will create an entry with value [j,j]
+### 5- Every time we find cell with value 8 in this row we will update the second element in the list with this the j of this cell. we will do the same for the columns. 
+### 6- iterate over the those 2 dictionaries and connect between the first and last cell in the rows and columns that has value 8
+
+### Python features and libraries:
+### In the below function I used standard python with numpy library 
+### I used numpy for clonning the 2D array.
+
 
 def solve_ded97339(x):
     clonned_array=np.copy(x)
@@ -95,12 +123,30 @@ def solve_ded97339(x):
             clonned_array[i][column_index]=8
             
     return clonned_array
-### Assumption that the grid will have only complete vertical columns or complete horizontal rows and check which one exists.
-### iterate over the matrix check if the matrix is vertical or horizontal mood.
-### create a dictionary with row/column color and corspnding row/column number and clone these columns/rows to the newly created (zero) array
-### iterate over the orginal array and check to find if a cell is not black, if the the color has a record in the row_column_dictionary,
-### if the matrix in vertical mood, we will update the cell[row][column+1/column-1] of the clonned matrix with the current value, otherwise we will update
-### if the matrix in horizontal mood, we will update cell[row][column+1/column-1] of the clonned matrix with the current value.
+
+
+### Assumptions:
+### That the grid will have only complete vertical columns or complete horizontal rows and check which one exists.
+
+### Description:
+### 1- We will check if the grid in the horozintal mood or vertical mood
+### 2- Record Columns/Rows and their colors
+### 3- find solo cells that the same colors as the Columns/Rows
+### 4- Push these cells to facing side of the column/row that has the same color
+### 4- set all other cells to black.
+
+### Code Steps: 
+### 1- Create a new matrix with default value 0
+### 2- Iterate over the matrix check if the matrix is vertical or horizontal mood.
+### 3- Create a dictionary with row/column color and corspnding row/column number and clone these columns/rows to the newly created (zero) array.
+### 4- Iterate over the orginal array untill if find a colored cell (non-zero cell) and check the the color has a record in the row_column_dictionary.
+### 5- If yes,if the matrix in vertical mood, we will update the cell[row][column+1/column-1] of the clonned matrix with the current value
+### 5- If the matrix in horizontal mood, we will update cell[row][column+1/column-1] of the clonned matrix with the current value.
+### 6- clear the checked ( set the value of this cell to zero).
+
+### Python features and libraries:
+### In the below function, I used standard python with numpy library 
+### I used numpy to create a new array with value zeros.
 
 
 def solve_1a07d186(x):
