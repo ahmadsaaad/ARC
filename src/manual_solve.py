@@ -1,23 +1,157 @@
 #!/usr/bin/python
 
+### Student Name: Ahmed Abdelaziz
+### Student ID: 20235539
+
 import os, sys
 import json
 import numpy as np
 import re
+
+
 
 ### YOUR CODE HERE: write at least three functions which solve
 ### specific tasks by transforming the input x and returning the
 ### result. Name them according to the task ID as in the three
 ### examples below. Delete the three examples. The tasks you choose
 ### must be in the data/training directory, not data/evaluation.
-def solve_6a1e5592(x):
-    return x
 
-def solve_b2862040(x):
-    return x
 
-def solve_05269061(x):
-    return x
+
+### Assumption any shape will be connected only horozntally or vertically not diagonally ( otherwise, we would add more functions to the recrusive)
+### clone the matrix into new matrix ( we could use the orginal one but just to not cause any affect in the orginal one)
+### find the first cell with value =8, increase the number of detected shapes by 1
+### clear all neighbour cells and recursively we will clear the neighbours of the neighbour.. etc
+### continue the loop untill we find the next cell with value 8 ... etc
+### finally create a matrix with x and y equal to the number of shapes and fill it diagonally with 8.
+### to avoid updating the original array or creating a new array to redeuce the space complixity, we could create set of visited cells. 
+
+def solve_d0f5fe59(x):
+    number_of_shapes=0
+    clonned_array=np.copy(x)
+    for i in range(len(clonned_array)):
+        for j in range(len(clonned_array.T)):
+            if clonned_array[i][j]==8:
+                number_of_shapes+=1
+                clear_cells(i, j, clonned_array)
+    output=np.zeros(((number_of_shapes,number_of_shapes)),dtype=int)
+    np.fill_diagonal(output, 8)
+    return output
+
+
+def clear_cells(row,column,arr):
+    if row <0 or row>=len(arr) or column<0 or column>=len(arr.T):
+        return
+    if arr[row][column]==0:
+        return
+    arr[row][column]=0
+    clear_cells(row,column+1,arr)
+    clear_cells(row+1,column,arr)
+    clear_cells(row-1,column,arr)
+    clear_cells(row,column-1,arr)
+
+
+### We will go through the rows and columns
+### create 2 dictionaries rows and columns. rows contains the first and the last column index of cells that has value 8 in this specific row,
+### while column will have the first and lat row index of cells that have value 8 in this sepicfic column.
+### the iteratopm os simple we iterate every row and if we found a cell with value 8, if the row dictionary doesnt have an entry for this row, we will create an entry with value [j,j]
+### and every time we find cell with value 8 in this row we will update the second element in the last with this the j of this cell. we will do the same for the columns. 
+### iterate over the those 2 dictionaries and connect between the first and last cell in the rows and columns that has value 8
+
+def solve_ded97339(x):
+    clonned_array=np.copy(x)
+    columns={}
+    rows={}
+    for i in range(len(clonned_array)):
+        for j in range(len(clonned_array.T)):
+            if clonned_array[i][j]==8:
+                if i in rows:
+                    rows[i][1]=j
+                else:
+                    rows[i]=[j,j]
+                if j in columns:
+                    columns[j][1]=i
+                else:
+                    columns[j]=[i,i]
+                    
+    for key in rows.keys():
+        row=rows[key]
+        row_index=key
+        start_column=row[0]
+        end_column=row[1]
+        if start_column==end_column:
+            continue
+        for j in range(start_column,end_column+1):
+            clonned_array[row_index][j]=8
+    
+    for key in columns.keys():
+        column=columns[key]
+        column_index=key
+        start_row=column[0]
+        end_row=column[1]
+        if start_row==end_row:
+            continue
+        for i in range(start_row,end_row+1):
+            clonned_array[i][column_index]=8
+            
+    return clonned_array
+### Assumption that the grid will have only complete vertical columns or complete horizontal rows and check which one exists.
+### iterate over the matrix check if the matrix is vertical or horizontal mood.
+### create a dictionary with row/column color and corspnding row/column number and clone these columns/rows to the newly created (zero) array
+### iterate over the orginal array and check to find if a cell is not black, if the the color has a record in the row_column_dictionary,
+### if the matrix in vertical mood, we will update the cell[row][column+1/column-1] of the clonned matrix with the current value, otherwise we will update
+### if the matrix in horizontal mood, we will update cell[row][column+1/column-1] of the clonned matrix with the current value.
+
+
+def solve_1a07d186(x):
+    is_vertical=True;
+    row_column_dictionary={}
+    row_column_set=set()
+    clonned_array=np.zeros((len(x),len(x.T)),dtype=int)
+
+    for row_i in x:
+        if np.all(row_i == row_i[0]) and row_i[0]!=0:
+            is_vertical=False
+            break;
+    if is_vertical:
+        for j in range(len(x.T)):
+            if np.all(x.T[j] == x.T[j][0]) and x.T[j][0]!=0:
+                row_column_dictionary[x.T[j][0]]=j
+                row_column_set.add(j)
+                clonned_array.T[j].fill(x.T[j][0])
+    else:
+        for i in range(len(x)):
+            if np.all(x[i] == x[i][0]) and x[i][0]!=0:
+                row_column_dictionary[x[i][0]]=i
+                row_column_set.add(i)
+                clonned_array[i].fill(x[i][0])
+    for row in range(len(x)):
+            if not is_vertical and row in row_column_set:
+                continue
+            for column in range (len(x[row])):
+                if is_vertical and column in row_column_set:
+                    continue
+                cell=x[row][column]
+                if cell in row_column_dictionary:
+                    if is_vertical:
+                        color_column=row_column_dictionary[cell]
+                        if color_column<column:
+                            clonned_array[row][color_column+1]=cell
+                        else:
+                              clonned_array[row][color_column-1]=cell
+                    else:
+                        color_row=row_column_dictionary[cell]
+                        if color_row<row:
+                            clonned_array[color_row+1][column]=cell
+                        else:
+                            clonned_array[color_row-1][column]=cell
+    return clonned_array
+
+
+
+
+
+
 
 
 def main():
@@ -89,6 +223,7 @@ def show_result(x, y, yhat):
     # if yhat has the right shape, then (y == yhat) is a bool array
     # and we test whether it is True everywhere. if yhat has the wrong
     # shape, then y == yhat is just a single bool.
+        
     print(np.all(y == yhat))
 
 if __name__ == "__main__": main()
