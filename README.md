@@ -1,3 +1,10 @@
+# Solution For The Abstraction and Reasoning Corpus (ARC)
+In this repository, I will be solving some of the Abstraction and Reasoning Corpus problems. Right now.
+All the solutions are in below file:
+**Right:**
+```
+manual_solve.py
+```
 # The Abstraction and Reasoning Corpus (ARC)
 
 This repository contains the ARC task data, as well as a browser-based interface for humans to try their hand at solving the tasks manually.
